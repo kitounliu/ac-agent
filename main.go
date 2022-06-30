@@ -35,7 +35,7 @@ loop:
 			"8: Create proof\n" +
 			"9: Verify proof\n" +
 			"10: Revoke users and update schema on chain (issuer only)\n" +
-			"11: Update witness and schema\n" +
+			"11: Update credential and schema\n" +
 			"q: Quit\n")
 		reader := bufio.NewReader(os.Stdin)
 		// ReadString will block until the delimiter is entered
@@ -343,6 +343,16 @@ loop:
 				log.Fatalln("An error occurred while revoking users. Please try again", err)
 				return
 			}
+			// query schema
+			res, err := cc.GetVerifiableCredential(cc.SchemaId)
+			if err != nil {
+				log.Fatalln("error querying anonymous credential schema", err)
+			}
+			data, err := cc.Ctx.Codec.MarshalJSON(res)
+			if err != nil {
+				log.Fatalln("error marshalling anonymous credential schema", err)
+			}
+			log.Infoln("updated schema:", string(data))
 			log.Infoln("successfully revoked users")
 		case "11":
 			if cc.Name == "issuer" {
@@ -367,6 +377,13 @@ loop:
 			oldPP := cc.IssuerPp
 			pp := vcSub.AnonCredSchema.PublicParams
 
+			// print schema
+			data, err := cc.Ctx.Codec.MarshalJSON(res)
+			if err != nil {
+				log.Fatalln("error marshalling anonymous credential schema", err)
+			}
+			log.Infoln("updated schema:", string(data))
+
 			err = client.IsNotRevoked(cc.UserCred.MemberIdSeed, oldPP, pp)
 			if err != nil {
 				log.Infof("%s is reovked and cannot update witness", cc.Name)
@@ -377,7 +394,7 @@ loop:
 
 			newWit, err := accumulator.UpdateWitness(oldPP.AccumulatorPublicParams, pp.AccumulatorPublicParams, cc.UserCred.MemberWitness)
 			if err != nil {
-				log.Fatalln("failed to update witness:", err.Error())
+				log.Fatalln("failed to update private credential (mebership witness):", err.Error())
 			}
 			cc.UserCred.MemberWitness = newWit
 			cc.IssuerPp = pp
