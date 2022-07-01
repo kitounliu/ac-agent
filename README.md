@@ -84,7 +84,7 @@ Main workflow
 8. Alice creates a proof using her private credential: choose option 8
 9. Bob verifies the proof: choose option 9
 
-10. Issuer revokes Bpb's membership: choose option 10
+10. Issuer revokes Bob's membership: choose option 10 and input bob
 11. Alice updates her private credential (membership witness) and local copy of schema: choose option  11
 12. Bob updates his local copy of schema: choose option 11. Since Bob is revoked, Bob will not be able to update his private credential.
 
