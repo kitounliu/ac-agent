@@ -130,7 +130,7 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 	//github.com/CosmWasm/wasmd => ../wasmd
-	github.com/CosmWasm/wasmd => github.com/kitounliu/wasmd v0.23.1-0.20220629154724-c4b2832c0185
+	github.com/CosmWasm/wasmd => github.com/kitounliu/wasmd v0.23.1-0.20220708153149-8a2e65a604eb
 	github.com/coinbase/kryptology => github.com/kitounliu/kryptology v1.8.1-0.20220629153208-77f7c7e9dad3
 	//github.com/coinbase/kryptology => ../kryptology
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0

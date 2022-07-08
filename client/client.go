@@ -15,8 +15,6 @@ import (
 	"github.com/CosmWasm/wasmd/app"
 	didtypes "github.com/CosmWasm/wasmd/x/did/types"
 	vctypes "github.com/CosmWasm/wasmd/x/verifiable-credential/types"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -435,18 +433,6 @@ func (cc *ChainClient) VerifySchemaWithDid(vc vctypes.VerifiableCredential) erro
 	}
 	doc := res.DidDocument
 
-	// load issuer public key
-	pkPath := DataPath + "/issuer.pk"
-	data, err = ioutil.ReadFile(pkPath)
-	if err != nil {
-		log.Fatalln("error reading issuer pk", err)
-	}
-	var pk cryptotypes.PubKey
-	err = cc.Ctx.Codec.UnmarshalInterfaceJSON(data, &pk)
-	if err != nil {
-		return err
-	}
-
 	if vc.Issuer != doc.Id {
 		return fmt.Errorf("vc issuer does not match did: expect %s got %s", doc.Id, vc.Issuer)
 	}
@@ -473,8 +459,9 @@ Outer:
 		return fmt.Errorf("not authorised")
 	}
 
-	if !doc.HasPublicKey(pk) {
-		return fmt.Errorf("did %s does not have pubkey %s", doc.Id, pk.String())
+	pk, err := doc.GetVerificationMethodPublicKey(vc.Proof.GetVerificationMethod())
+	if err != nil {
+		return fmt.Errorf("failed to get public key from did %s", doc.Id)
 	}
 
 	return vc.Validate(pk)

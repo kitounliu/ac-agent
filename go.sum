@@ -604,8 +604,8 @@ github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/kitounliu/kryptology v1.8.1-0.20220629153208-77f7c7e9dad3 h1:fwDoGPTlnibMAr/oRSOBpe+SCupqoCf+wBhYXuatsTg=
 github.com/kitounliu/kryptology v1.8.1-0.20220629153208-77f7c7e9dad3/go.mod h1:RYXOAPdzOGUe3qlSFkMGn58i3xUA8hmxYHksuq+8ciI=
-github.com/kitounliu/wasmd v0.23.1-0.20220629154724-c4b2832c0185 h1:MU6Cd5qBEPTm96xJwXxWiBeVbVzpnBE20or/XfEX4ZI=
-github.com/kitounliu/wasmd v0.23.1-0.20220629154724-c4b2832c0185/go.mod h1:5nCM73C8d4WciupVLjyj+6YnibdBEB4f7RlK/fD4j4w=
+github.com/kitounliu/wasmd v0.23.1-0.20220708153149-8a2e65a604eb h1:h4lBiMXLPfPLbqERvKyGKGmTVBAMW4xCVkasjK3g/BA=
+github.com/kitounliu/wasmd v0.23.1-0.20220708153149-8a2e65a604eb/go.mod h1:5nCM73C8d4WciupVLjyj+6YnibdBEB4f7RlK/fD4j4w=
 github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
 github.com/klauspost/compress v1.10.3/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
 github.com/klauspost/compress v1.11.7/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
