@@ -35,15 +35,12 @@ import (
 
 // for transferring balance for new users
 func loadValidator(kr keyring.Keyring) keyring.Keyring {
-	passcode, err := ioutil.ReadFile(ValidatorPassPath)
-	if err != nil {
-		log.Fatalln("error reading validator passcode", err)
-	}
+	passcode := "password"
 	armor, err := ioutil.ReadFile(ValidatorKeyPath)
 	if err != nil {
 		log.Fatalln("error reading validator keys", err)
 	}
-	err = kr.ImportPrivKey(ValidatorName, string(armor), string(passcode))
+	err = kr.ImportPrivKey(ValidatorName, string(armor), passcode)
 	if err != nil {
 		log.Fatalln("error loading private key", err)
 	}

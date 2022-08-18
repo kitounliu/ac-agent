@@ -30,10 +30,9 @@ wasmd init localnet --chain-id localnet
 # create validator address
 
 wasmd keys add validator 
-# copy the validator passcode to file "ac-agent/keys/validator.passcode"
 
 wasmd keys export validator
-# input the passcode to export validator private key and copy it to "ac-agent/keys/validator.armor"
+# input "password" to export validator private key and copy it to "ac-agent/keys/validator.armor"
 
 wasmd add-genesis-account $(wasmd keys show validator -a) 100000000000000000000000stake
 
