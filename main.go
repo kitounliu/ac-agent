@@ -9,14 +9,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/accumulator"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/anonymouscredential"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/accumulator"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/anonymouscredential"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/kitounliu/ac-agent/client"
 
-	vctypes "github.com/CosmWasm/wasmd/x/verifiable-credential/types"
+	vctypes "github.com/fetchai/fetchd/x/verifiable-credential/types"
 )
 
 const SchemaFilePath = "data/schema"

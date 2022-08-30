@@ -3,10 +3,10 @@ package client
 import (
 	"context"
 
-	didtypes "github.com/CosmWasm/wasmd/x/did/types"
-	vctypes "github.com/CosmWasm/wasmd/x/verifiable-credential/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	didtypes "github.com/fetchai/fetchd/x/did/types"
+	vctypes "github.com/fetchai/fetchd/x/verifiable-credential/types"
 	log "github.com/sirupsen/logrus"
 )
 

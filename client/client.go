@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/accumulator"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/anonymouscredential"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/bbsplus"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/types"
 	accumcrypto "github.com/coinbase/kryptology/pkg/accumulator"
 	"github.com/coinbase/kryptology/pkg/core/curves"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/accumulator"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/anonymouscredential"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/bbsplus"
+	"github.com/fetchai/fetchd/x/verifiable-credential/types"
 
-	"github.com/CosmWasm/wasmd/app"
-	didtypes "github.com/CosmWasm/wasmd/x/did/types"
-	vctypes "github.com/CosmWasm/wasmd/x/verifiable-credential/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -25,6 +22,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/fetchai/fetchd/app"
+	didtypes "github.com/fetchai/fetchd/x/did/types"
+	vctypes "github.com/fetchai/fetchd/x/verifiable-credential/types"
 
 	"io/ioutil"
 
@@ -48,11 +48,14 @@ func loadValidator(kr keyring.Keyring) keyring.Keyring {
 }
 
 func InitClient(name string, password string) *ChainClient {
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount(app.Bech32PrefixAccAddr, app.Bech32PrefixAccPub)
-	cfg.Seal()
+	//	cfg := sdk.GetConfig()
+	//	cfg.SetBech32PrefixForAccount(app.Bech32PrefixAccAddr, app.Bech32PrefixAccPub)
+	//	cfg.Seal()
+	app.SetConfig()
 
-	kr := keyring.NewInMemory()
+	encodingConfig := app.MakeEncodingConfig()
+
+	kr := keyring.NewInMemory(encodingConfig.Codec)
 	// load validator to give some balance to new user
 	kr = loadValidator(kr)
 	// create keys for new user
@@ -68,7 +71,10 @@ func InitClient(name string, password string) *ChainClient {
 	if err != nil {
 		log.Fatalln("cannot load stored key by uid", err)
 	}
-	pk := user.GetPubKey()
+	pk, err := user.GetPubKey()
+	if err != nil {
+		log.Fatalln("cannot get public-key", err)
+	}
 	// print public key
 	apk, err := codectypes.NewAnyWithValue(pk)
 	if err != nil {
@@ -79,7 +85,11 @@ func InitClient(name string, password string) *ChainClient {
 		log.Fatalln("cannot marshal public-key", err)
 	}
 	log.Infoln("public-key is: ", string(bz))
-	log.Infoln("address is: ", user.GetAddress().String())
+	userAddr, err := user.GetAddress()
+	if err != nil {
+		log.Fatalln("cannot get user address", err)
+	}
+	log.Infoln("address is: ", userAddr.String())
 
 	kv, err := kr.Key(ValidatorName)
 	if err != nil {
@@ -91,10 +101,13 @@ func InitClient(name string, password string) *ChainClient {
 	if err != nil {
 		log.Fatalln("error connecting to the node", err)
 	}
-	encodingConfig := app.MakeEncodingConfig()
 
+	kvAddr, err := kv.GetAddress()
+	if err != nil {
+		log.Fatalln("failed to get validator address", err)
+	}
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Marshaler).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithAccountRetriever(authTypes.AccountRetriever{}).
@@ -104,7 +117,7 @@ func InitClient(name string, password string) *ChainClient {
 		WithHomeDir(fmt.Sprintf("%s/%s/", HomeDir, name)).
 		WithNodeURI(NodeURI).
 		WithFromName(ValidatorName).
-		WithFromAddress(kv.GetAddress()).
+		WithFromAddress(kvAddr).
 		WithSkipConfirmation(true).
 		WithClient(netCli)
 	//WithLegacyAmino(encodingConfig.Amino).
@@ -113,24 +126,24 @@ func InitClient(name string, password string) *ChainClient {
 	cc := ChainClient{
 		Ctx:  initClientCtx,
 		Name: name,
-		Acc:  user.GetAddress(),
+		Acc:  userAddr,
 	}
 
 	// give new user some balance
-	coins, err := sdk.ParseCoinsNormalized("10000000stake")
+	coins, err := sdk.ParseCoinsNormalized("10000000afet")
 	if err != nil {
 		log.Fatalln("cannot creat coins", err)
 	}
 	// send some coins from validator to the new user
 	log.Printf("giving %s some funds\n", cc.Name)
-	msg := banktypes.NewMsgSend(kv.GetAddress(), user.GetAddress(), coins)
+	msg := banktypes.NewMsgSend(kvAddr, userAddr, coins)
 	pf := pflag.NewFlagSet("default", pflag.PanicOnError)
 	if err := tx.GenerateOrBroadcastTxCLI(cc.Ctx, pf, msg); err != nil {
 		log.Fatalln("failed tx for initial payment", err)
 	}
 
 	// set client to the new user
-	clientCtx := cc.Ctx.WithFromName(name).WithFromAddress(user.GetAddress())
+	clientCtx := cc.Ctx.WithFromName(name).WithFromAddress(userAddr)
 	cc.Ctx = clientCtx
 
 	// create a did for the new user
@@ -180,14 +193,22 @@ func InitClient(name string, password string) *ChainClient {
 	return &cc
 }
 
-func initDIDDoc(did didtypes.DID, ki keyring.Info) sdk.Msg {
+func initDIDDoc(did didtypes.DID, ki *keyring.Record) sdk.Msg {
 	// verification method id
-	vmID := did.NewVerificationMethodID(ki.GetAddress().String())
+	kiAddr, err := ki.GetAddress()
+	if err != nil {
+		log.Fatalln("error getting address", err)
+	}
+	kiPk, err := ki.GetPubKey()
+	if err != nil {
+		log.Fatalln("error getting public key", err)
+	}
+	vmID := did.NewVerificationMethodID(kiAddr.String())
 	verification := didtypes.NewVerification(
 		didtypes.NewVerificationMethod(
 			vmID,
 			did,
-			didtypes.NewPublicKeyMultibase(ki.GetPubKey().Bytes(), didtypes.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019),
+			didtypes.NewPublicKeyMultibase(kiPk.Bytes(), didtypes.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019),
 		),
 		[]string{didtypes.Authentication},
 		nil,
@@ -197,7 +218,7 @@ func initDIDDoc(did didtypes.DID, ki keyring.Info) sdk.Msg {
 		did.String(),
 		didtypes.Verifications{verification},
 		didtypes.Services{},
-		ki.GetAddress().String(),
+		kiAddr.String(),
 	)
 }
 

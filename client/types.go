@@ -1,10 +1,10 @@
 package client
 
 import (
-	didTypes "github.com/CosmWasm/wasmd/x/did/types"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/anonymouscredential"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	didTypes "github.com/fetchai/fetchd/x/did/types"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/anonymouscredential"
 )
 
 const ValidatorName = "validator"

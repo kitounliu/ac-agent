@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/accumulator"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/anonymouscredential"
-	"github.com/CosmWasm/wasmd/x/verifiable-credential/crypto/bbsplus"
 	accumcrypto "github.com/coinbase/kryptology/pkg/accumulator"
 	"github.com/coinbase/kryptology/pkg/core/curves"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/accumulator"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/anonymouscredential"
+	"github.com/fetchai/fetchd/x/verifiable-credential/crypto/bbsplus"
 
 	"github.com/coinbase/kryptology/pkg/signatures/common"
 )

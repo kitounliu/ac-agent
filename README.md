@@ -5,50 +5,49 @@
 
 
 ### Running demo with local WasmD node
-Install wasmd
+Install fetchd
 ```
-git clone https://github.com/kitounliu/wasmd.git
-cd wasmd
-git checkout ssi
+git clone https://github.com/kitounliu/fetchd.git
+cd fetchd
+git checkout integration/identity
 make install
 
 ```
 
 
 
-Setup WasmD node
+Setup FetchD node
 ```s
 # Initialise test chain
 
 # Clean state 
-rm -rf ~/.wasm*
+rm -rf ~/.fetch*
 
-# default home is ~/.wasmd
-# initialize wasmd configuration files
-wasmd init localnet --chain-id localnet
+# default home is ~/.fetchd
+# initialize fetchd configuration files
+fetchd init localnet --chain-id localnet
 
 # create validator address
 
-wasmd keys add validator 
+fetchd keys add validator 
 
-wasmd keys export validator
+fetchd keys export validator
 # input "password" to export validator private key and copy it to "ac-agent/keys/validator.armor"
 
-wasmd add-genesis-account $(wasmd keys show validator -a) 100000000000000000000000stake
+fetchd add-genesis-account $(wasmd keys show validator -a) 100000000000000000000000afet
 
-wasmd gentx validator 10000000000000000000000stake --chain-id localnet
+fetchd gentx validator 10000000000000000000000afet --chain-id localnet
 
 # collect gentxs to genesis
-wasmd collect-gentxs 
+fetchd collect-gentxs 
 
 # validate the genesis file
-wasmd validate-genesis 
+fetchd validate-genesis 
 
-# Enable rest-api
-sed -i '/^\[api\]$/,/^\[/ s/^enable = false/enable = true/' ~/.wasmd/config/app.toml
+# Open ~/.fetchd/config/app.toml and set "minimum-gas-prices" to be "0afet"
 
 # run the node
-wasmd start
+fetchd start
 ```
 
 
